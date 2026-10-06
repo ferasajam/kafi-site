@@ -1,0 +1,201 @@
+<header class="nav" [class.solid]="scrolled()">
+  <a class="logo" href="#">KAFI <b>Transporte</b></a>
+  <nav>
+    @for (item of nav; track item.label) {
+      <a [href]="item.href">{{ item.label }}</a>
+    }
+  </nav>
+  <div class="nav-actions">
+    <a class="btn ghost" href="#estimate">Angebot erhalten</a>
+    <a class="btn call-btn" href="tel:+4917662811839" aria-label="KAFI Transporte anrufen: +49 176 62811839">
+      <span aria-hidden="true">☎</span> Anrufen
+    </a>
+  </div>
+</header>
+
+<section class="hero">
+  <app-hero-3d />
+  <div class="hero-in">
+    <p class="eyebrow">Berlin • Deutschlandweit</p>
+    <h1 reveal>Ihr Umzug.<span>Deutschlandweit.</span></h1>
+    <p reveal [delay]="120">Professionelle Umzüge und Transporte von Berlin in ganz Deutschland – zuverlässig, persönlich und unkompliziert.</p>
+    <div class="row" reveal [delay]="240">
+      <a class="btn solid" href="#estimate">Kostenloses Angebot anfragen →</a>
+      <a class="btn call-btn" href="tel:+4917662811839" aria-label="KAFI Transporte anrufen: +49 176 62811839">
+        <span aria-hidden="true">☎</span> Anrufen
+      </a>
+      <a class="btn ghost" href="https://wa.me/4917662811839?text=Hallo%20KAFI%20Transporte%2C%20ich%20m%C3%B6chte%20ein%20kostenloses%20Angebot%20anfragen." target="_blank" rel="noreferrer">WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<div class="trust-bar">
+  <div class="trust-inner">
+    @for (item of trust; track item.label) {
+      <span><strong>{{ item.label }}</strong><small>{{ item.value }}</small></span>
+    }
+  </div>
+</div>
+
+<section id="services" class="sec light">
+  <div class="intro" reveal>
+    <p class="eyebrow accent">Leistungen</p>
+    <h2>Alles für Ihren Umzug. Aus einer Hand.</h2>
+  </div>
+  <div class="cards services-grid">
+    @for (s of services; track s.t) {
+      <article class="card service" tilt reveal [delay]="$index * 80">
+        <span class="ico">{{ s.i }}</span>
+        <h3>{{ s.t }}</h3>
+        <p>{{ s.d }}</p>
+      </article>
+    }
+  </div>
+</section>
+
+<section id="coverage" class="sec dark map-sec">
+  <div class="split map-layout">
+    <div reveal>
+      <p class="eyebrow accent">Deutschlandweit</p>
+      <h2>Von Berlin nach überall.</h2>
+      <p class="lede">Ihr Ziel ist nicht Berlin? KAFI Transporte ist deutschlandweit für Sie unterwegs.</p>
+      <div class="chip-row">
+        <span>Hamburg</span><span>Bremen</span><span>Hannover</span><span>Münster</span><span>Essen</span>
+        <span>Dortmund</span><span>Düsseldorf</span><span>Köln</span><span>Frankfurt</span><span>Leipzig</span>
+        <span>Dresden</span><span>Nürnberg</span><span>Stuttgart</span><span>München</span>
+      </div>
+    </div>
+    <div class="map-art" tilt>
+      <div class="map-origin">Berlin</div>
+      <span class="city c-hamburg" data-name="Hamburg" aria-label="Hamburg"></span>
+      <span class="city c-bremen" data-name="Bremen" aria-label="Bremen"></span>
+      <span class="city c-hannover" data-name="Hannover" aria-label="Hannover"></span>
+      <span class="city c-muenster" data-name="Münster" aria-label="Münster"></span>
+      <span class="city c-essen" data-name="Essen" aria-label="Essen"></span>
+      <span class="city c-dortmund" data-name="Dortmund" aria-label="Dortmund"></span>
+      <span class="city c-duesseldorf" data-name="Düsseldorf" aria-label="Düsseldorf"></span>
+      <span class="city c-koeln" data-name="Köln" aria-label="Köln"></span>
+      <span class="city c-frankfurt" data-name="Frankfurt" aria-label="Frankfurt"></span>
+      <span class="city c-leipzig" data-name="Leipzig" aria-label="Leipzig"></span>
+      <span class="city c-dresden" data-name="Dresden" aria-label="Dresden"></span>
+      <span class="city c-nuernberg" data-name="Nürnberg" aria-label="Nürnberg"></span>
+      <span class="city c-stuttgart" data-name="Stuttgart" aria-label="Stuttgart"></span>
+      <span class="city c-muenchen" data-name="München" aria-label="München"></span>
+    </div>
+  </div>
+</section>
+
+<section id="steps" class="sec light">
+  <div class="intro" reveal>
+    <p class="eyebrow accent">Ablauf</p>
+    <h2>So einfach kann Umziehen sein.</h2>
+  </div>
+  <div class="process-grid">
+    <div class="process" reveal><span>01</span><h3>Anfrage</h3><p>Sie teilen uns Ihre Umzugsdaten mit.</p></div>
+    <div class="process" reveal><span>02</span><h3>Prüfung</h3><p>Wir prüfen Route, Umfang, Termin und Anforderungen.</p></div>
+    <div class="process" reveal><span>03</span><h3>Kontakt</h3><p>Wir melden uns bei Ihnen und klären offene Fragen.</p></div>
+    <div class="process" reveal><span>04</span><h3>Angebot</h3><p>Sie erhalten ein individuelles Angebot.</p></div>
+    <div class="process" reveal><span>05</span><h3>Planung</h3><p>Termin und weitere Details werden abgestimmt.</p></div>
+    <div class="process" reveal><span>06</span><h3>Umzug</h3><p>Der Umzug wird durchgeführt.</p></div>
+  </div>
+</section>
+
+<section class="sec dark" id="about">
+  <div class="intro" reveal>
+    <p class="eyebrow accent">Warum KAFI</p>
+    <h2>Mehr als nur Transport.</h2>
+  </div>
+  <div class="cards about-grid">
+    @for (f of features; track f.t) {
+      <article class="card about-card" tilt reveal [delay]="$index * 100">
+        <span class="ico">{{ f.i }}</span>
+        <h3>{{ f.t }}</h3>
+        <p>{{ f.d }}</p>
+      </article>
+    }
+  </div>
+</section>
+
+<section id="reviews" class="sec light review-sec">
+  <div class="intro" reveal>
+    <p class="eyebrow accent">Bewertungen</p>
+    <h2>Was Kunden über KAFI Transporte sagen.</h2>
+    <p class="lede small">Echte Erfahrungen von Kunden auf unabhängigen Plattformen.</p>
+  </div>
+  <div class="cards review-grid">
+    <article class="card review-card" reveal>
+      <div class="stars">★★★★★</div>
+      <h3>MyHammer</h3>
+      <strong>4,5 / 5</strong>
+      <span>414 Bewertungen</span>
+      <a href="https://www.my-hammer.de/" target="_blank" rel="noreferrer">Auf MyHammer ansehen →</a>
+    </article>
+    <article class="card review-card" reveal>
+      <div class="stars">★★★★★</div>
+      <h3>Google</h3>
+      <strong>4,6 / 5</strong>
+      <span>21 Bewertungen</span>
+      <a href="https://www.google.com/search?q=KAFI+Transporte+Berlin" target="_blank" rel="noreferrer">Auf Google ansehen →</a>
+    </article>
+  </div>
+</section>
+
+<section id="estimate" class="sec light"><div class="wiz" reveal><app-estimate /></div></section>
+
+<section id="faqs" class="sec light"><h2 reveal>Häufige Fragen</h2>
+  @for (f of faqs; track f.q) {
+    <div class="faq" [class.open]="open() === $index"><button (click)="open.set(open() === $index ? -1 : $index)">{{ f.q }}<i>+</i></button><div><p>{{ f.a }}</p></div></div>
+  }
+</section>
+
+<section id="cta" class="sec dark center final-cta">
+  <h2 class="mega" [parallax]="0.05">Bereit für Ihren Umzug?</h2>
+  <p class="cta-sub">Von Berlin in ganz Deutschland.</p>
+  <div class="row">
+    <a class="btn solid" href="#estimate">Kostenloses Angebot anfragen →</a>
+    <a class="btn call-btn" href="tel:+4917662811839" aria-label="KAFI Transporte anrufen: +49 176 62811839">
+      <span aria-hidden="true">☎</span> Anrufen
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="logo footer-logo">KAFI <b>Transporte</b></div>
+      <p>Ihr Umzug. Deutschlandweit.</p>
+    </div>
+    <div>
+      <h4>Navigation</h4>
+      <ul>
+        @for (item of nav; track item.label) {
+          <li><a [href]="item.href">{{ item.label }}</a></li>
+        }
+      </ul>
+    </div>
+    <div>
+      <h4>Kontakt</h4>
+      <ul>
+        <li>Ringslebenstraße 78</li>
+        <li>12353 Berlin</li>
+        <li>Deutschland</li>
+        <li><a href="tel:+4917662811839">+49 176 62811839</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Externe Plattformen</h4>
+      <ul>
+        <li><a href="https://www.my-hammer.de/" target="_blank" rel="noreferrer">MyHammer</a></li>
+        <li><a href="https://www.google.com/search?q=KAFI+Transporte+Berlin" target="_blank" rel="noreferrer">Google</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 KAFI Transporte · <a href="#">Impressum</a> · <a href="#">Datenschutz</a></div>
+</footer>
+
+@if (modal()) { <div class="modal" (click)="modal.set(false)"><div class="sheet" (click)="$event.stopPropagation()">
+  <button class="x" (click)="modal.set(false)" aria-label="Close">×</button>
+  <h3>Jetzt anrufen</h3>
+  @for (p of phones; track p.c) { <p>{{ p.c }}<br><a [href]="'tel:' + p.n">{{ p.n }}</a></p> }
+  <a class="btn solid" href="https://wa.me/4917662811839?text=Hallo%20KAFI%20Transporte%2C%20ich%20m%C3%B6chte%20ein%20kostenloses%20Angebot%20anfragen." target="_blank" rel="noreferrer">WhatsApp</a>
+</div></div> }
