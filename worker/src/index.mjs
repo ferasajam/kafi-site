@@ -47,6 +47,18 @@ function isFutureDate(value) {
   return value >= new Date().toISOString().slice(0, 10);
 }
 
+function optionalInteger(value, min, max) {
+  if (value === null || value === undefined) return null;
+  return Number.isInteger(value) && value >= min && value <= max ? value : Number.NaN;
+}
+
+function formatFloor(value) {
+  if (value === null) return 'Nicht angegeben';
+  if (value === 0) return 'Erdgeschoss';
+  if (value < 0) return `Keller ${Math.abs(value)}`;
+  return `${value}. Obergeschoss`;
+}
+
 export default {
   async fetch(request, env) {
     const origin = request.headers.get('Origin') || '';
@@ -106,6 +118,12 @@ export default {
         city: clean(payload.destination?.city, 80),
         address: clean(payload.destination?.address, 120)
       },
+      moveDetails: {
+        areaSqm: optionalInteger(payload.moveDetails?.areaSqm, 1, 1000),
+        roomCount: optionalInteger(payload.moveDetails?.roomCount, 1, 50),
+        originFloor: optionalInteger(payload.moveDetails?.originFloor, -3, 100),
+        destinationFloor: optionalInteger(payload.moveDetails?.destinationFloor, -3, 100)
+      },
       date: clean(payload.date, 20),
       alternateDates: submittedAlternatives,
       contact: {
@@ -128,6 +146,7 @@ export default {
       !POSTCODE_PATTERN.test(inquiry.origin.zip) ||
       !POSTCODE_PATTERN.test(inquiry.destination.zip) ||
       !isFutureDate(inquiry.date) ||
+      Object.values(inquiry.moveDetails).some(Number.isNaN) ||
       inquiry.alternateDates.length > 3 ||
       uniqueAlternatives.size !== inquiry.alternateDates.length ||
       inquiry.alternateDates.some(value => !isFutureDate(value) || value === inquiry.date) ||
@@ -146,6 +165,10 @@ export default {
       ['Leistung', inquiry.service],
       ['Von', formatAddress(inquiry.origin)],
       ['Nach', formatAddress(inquiry.destination)],
+      ['Wohnfläche', inquiry.moveDetails.areaSqm === null ? 'Nicht angegeben' : `${inquiry.moveDetails.areaSqm} m²`],
+      ['Zimmer', inquiry.moveDetails.roomCount === null ? 'Nicht angegeben' : String(inquiry.moveDetails.roomCount)],
+      ['Etage Start', formatFloor(inquiry.moveDetails.originFloor)],
+      ['Etage Ziel', formatFloor(inquiry.moveDetails.destinationFloor)],
       ['Wunschtermin', inquiry.date],
       ['Alternative Termine', inquiry.alternateDates.join(', ') || 'Keine angegeben'],
       ['Name', fullName],

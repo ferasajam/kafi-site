@@ -24,6 +24,7 @@ function validPayload(overrides = {}) {
     service: 'Privatumzug',
     origin: { zip: '12353', city: 'Berlin', address: 'Ringslebenstraße 78' },
     destination: { zip: '20095', city: 'Hamburg', address: 'Mönckebergstraße 7' },
+    moveDetails: { areaSqm: null, roomCount: null, originFloor: null, destinationFloor: null },
     date: futureDate(),
     alternateDate: '',
     contact: { firstName: 'Firas', lastName: 'Test', phone: '+49123456789', email: 'kunde@example.com' },
@@ -63,7 +64,32 @@ test('sends a validated inquiry to the configured recipient', async t => {
   assert.equal(sent.body.to[0], 'firasajam10@gmail.com');
   assert.equal(sent.body.reply_to, 'kunde@example.com');
   assert.match(sent.body.text, /12353 Berlin/);
+  assert.match(sent.body.text, /Wohnfläche: Nicht angegeben/);
   assert.equal(result.headers.get('Access-Control-Allow-Origin'), origin);
+});
+
+test('includes optional move size, rooms, and floors in the email', async t => {
+  let sentBody;
+  t.mock.method(globalThis, 'fetch', async (_url, options) => {
+    sentBody = JSON.parse(options.body);
+    return Response.json({ id: 'email-id' });
+  });
+  const result = await worker.fetch(makeRequest(validPayload({
+    moveDetails: { areaSqm: 74, roomCount: 3, originFloor: 4, destinationFloor: -1 }
+  })), env);
+  assert.equal(result.status, 200);
+  assert.match(sentBody.text, /Wohnfläche: 74 m²/);
+  assert.match(sentBody.text, /Zimmer: 3/);
+  assert.match(sentBody.text, /Etage Start: 4\. Obergeschoss/);
+  assert.match(sentBody.text, /Etage Ziel: Keller 1/);
+});
+
+test('rejects invalid move detail ranges', async t => {
+  t.mock.method(globalThis, 'fetch', async () => { throw new Error('Resend must not be called'); });
+  const result = await worker.fetch(makeRequest(validPayload({
+    moveDetails: { areaSqm: 0, roomCount: 3.5, originFloor: 4, destinationFloor: -1 }
+  })), env);
+  assert.equal(result.status, 400);
 });
 
 test('accepts the German national phone number 15700000000', async t => {

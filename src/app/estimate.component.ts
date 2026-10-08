@@ -28,6 +28,10 @@ interface InquiryDraft {
   destZip: string;
   destCity: string;
   destAddress: string;
+  areaSqm: number | null;
+  roomCount: number | null;
+  originFloor: number | null;
+  destinationFloor: number | null;
   date: string;
   alternateDates: string[];
   name: string;
@@ -42,8 +46,8 @@ interface InquiryDraft {
   imports: [FormsModule, TiltDirective],
   template: `
     <div class="wizard-progress">
-      <span>Schritt {{ step() < 5 ? step() + 1 : 5 }} von 5</span>
-      <div class="bar"><i [style.width.%]="(Math.min(step(), 4) + 1) * 20"></i></div>
+      <span>Schritt {{ step() < 6 ? step() + 1 : 6 }} von 6</span>
+      <div class="bar"><i [style.width.%]="(Math.min(step(), 5) + 1) * 100 / 6"></i></div>
     </div>
     @switch (step()) {
       @case (0) {
@@ -112,6 +116,33 @@ interface InquiryDraft {
         </div>
       }
       @case (3) {
+        <h2>Wie groß ist Ihr Umzug?</h2>
+        <p>Ungefähre Angaben helfen uns bei der Planung. Alle Felder sind optional.</p>
+        <div class="field-grid move-details-grid">
+          <div class="field-group">
+            <label for="area-sqm">Wohnfläche (m²)</label>
+            <input class="fld" id="area-sqm" type="number" min="1" max="1000" step="1" inputmode="numeric" placeholder="z. B. 65" [(ngModel)]="areaSqm" (ngModelChange)="saveDraft()">
+            @if (areaSqm !== null && !validOptionalInteger(areaSqm, 1, 1000)) { <small class="field-error">Bitte geben Sie einen Wert zwischen 1 und 1000 m² ein.</small> }
+          </div>
+          <div class="field-group">
+            <label for="room-count">Anzahl Zimmer</label>
+            <input class="fld" id="room-count" type="number" min="1" max="50" step="1" inputmode="numeric" placeholder="z. B. 3" [(ngModel)]="roomCount" (ngModelChange)="saveDraft()">
+            @if (roomCount !== null && !validOptionalInteger(roomCount, 1, 50)) { <small class="field-error">Bitte geben Sie 1 bis 50 Zimmer an.</small> }
+          </div>
+          <div class="field-group">
+            <label for="origin-floor">Etage am Startort</label>
+            <input class="fld" id="origin-floor" type="number" min="-3" max="100" step="1" inputmode="numeric" placeholder="z. B. 3" [(ngModel)]="originFloor" (ngModelChange)="saveDraft()">
+            @if (originFloor !== null && !validOptionalInteger(originFloor, -3, 100)) { <small class="field-error">Bitte geben Sie eine Etage zwischen Keller -3 und 100 ein.</small> }
+          </div>
+          <div class="field-group">
+            <label for="destination-floor">Etage am Zielort</label>
+            <input class="fld" id="destination-floor" type="number" min="-3" max="100" step="1" inputmode="numeric" placeholder="z. B. 2" [(ngModel)]="destinationFloor" (ngModelChange)="saveDraft()">
+            @if (destinationFloor !== null && !validOptionalInteger(destinationFloor, -3, 100)) { <small class="field-error">Bitte geben Sie eine Etage zwischen Keller -3 und 100 ein.</small> }
+          </div>
+        </div>
+        <small class="form-hint">0 = Erdgeschoss, negative Werte = Keller.</small>
+      }
+      @case (4) {
         <h2>Wann möchten Sie umziehen?</h2>
         <div class="field-group">
           <label for="move-date">Wunschtermin</label>
@@ -135,7 +166,7 @@ interface InquiryDraft {
           }
         </div>
       }
-      @case (4) {
+      @case (5) {
         <h2>Ihre Kontaktdaten</h2>
         <div class="field-stack">
           <div class="field-group"><label for="first-name">Vorname</label><input class="fld" id="first-name" autocomplete="given-name" placeholder="Vorname" minlength="2" maxlength="80" required [ngModel]="name" (ngModelChange)="name = $event; saveDraft()">@if (name && !validName(name)) { <small class="field-error">Bitte prüfen Sie Ihren Vornamen.</small> }</div>
@@ -157,10 +188,10 @@ interface InquiryDraft {
         </div>
         <p class="form-note">Ihr Entwurf bleibt vorübergehend in diesem Browser-Tab gespeichert und wird nach erfolgreichem Versand gelöscht. Wir verwenden Ihre Angaben zur Bearbeitung Ihrer Umzugsanfrage. Details finden Sie in unserer <a href="/datenschutz/" target="_blank" rel="noreferrer">Datenschutzerklärung</a>.</p>
       }
-      @case (5) {
+      @case (6) {
         <h2>Vielen Dank, {{ name }}!</h2>
         <p>Ihre Umzugsanfrage wurde erfolgreich an KAFI Transporte übermittelt. Wir melden uns persönlich bei Ihnen.</p>
-        <p class="request-summary"><strong>{{ service() }}</strong><br>{{ originCity }} → {{ destCity }}<br>Wunschtermin: {{ date }}<br>Alternativen: {{ alternateDates().join(', ') || 'Keine' }}</p>
+        <p class="request-summary"><strong>{{ service() }}</strong><br>{{ originCity }} → {{ destCity }}<br>{{ areaSqm ? areaSqm + ' m²' : 'Wohnfläche offen' }} · {{ roomCount ? roomCount + ' Zimmer' : 'Zimmer offen' }}<br>Etage: {{ originFloor ?? 'offen' }} → {{ destinationFloor ?? 'offen' }}<br>Wunschtermin: {{ date }}<br>Alternativen: {{ alternateDates().join(', ') || 'Keine' }}</p>
         <div class="row">
           <a class="btn ghost dark" href="tel:+491787410656">☎ Anrufen</a>
           <a class="btn ghost dark" href="https://wa.me/491787410656" target="_blank" rel="noreferrer">WhatsApp</a>
@@ -172,11 +203,11 @@ interface InquiryDraft {
       <p class="form-error" role="alert">{{ submitError() }}</p>
     }
 
-    @if (step() < 5) {
+    @if (step() < 6) {
       <div class="row">
         <button type="button" class="btn ghost dark" [disabled]="step() === 0 || sending()" (click)="goBack()">Zurück</button>
         <button class="btn solid" [disabled]="!ok() || sending()" (click)="advance()">
-          {{ sending() ? 'Wird gesendet …' : step() === 4 ? 'Kostenloses Angebot anfragen' : 'Weiter' }}
+          {{ sending() ? 'Wird gesendet …' : step() === 5 ? 'Kostenloses Angebot anfragen' : 'Weiter' }}
         </button>
       </div>
     }
@@ -210,8 +241,11 @@ export class EstimateComponent {
   destZip = '';
   destCity = '';
   destAddress = '';
+  areaSqm: number | null = null;
+  roomCount: number | null = null;
+  originFloor: number | null = null;
+  destinationFloor: number | null = null;
   date = '';
-  altDate = '';
   name = '';
   surname = '';
   phone = '';
@@ -237,7 +271,7 @@ export class EstimateComponent {
       const draft = JSON.parse(stored) as Partial<InquiryDraft>;
       if (draft.version !== 1) return;
 
-      this.step.set(Number.isInteger(draft.step) ? Math.max(0, Math.min(4, draft.step!)) : 0);
+      this.step.set(Number.isInteger(draft.step) ? Math.max(0, Math.min(5, draft.step!)) : 0);
       this.service.set(typeof draft.service === 'string' ? draft.service : '');
       this.originZip = typeof draft.originZip === 'string' ? draft.originZip : '';
       this.originCity = typeof draft.originCity === 'string' ? draft.originCity : '';
@@ -245,6 +279,10 @@ export class EstimateComponent {
       this.destZip = typeof draft.destZip === 'string' ? draft.destZip : '';
       this.destCity = typeof draft.destCity === 'string' ? draft.destCity : '';
       this.destAddress = typeof draft.destAddress === 'string' ? draft.destAddress : '';
+      this.areaSqm = typeof draft.areaSqm === 'number' ? draft.areaSqm : null;
+      this.roomCount = typeof draft.roomCount === 'number' ? draft.roomCount : null;
+      this.originFloor = typeof draft.originFloor === 'number' ? draft.originFloor : null;
+      this.destinationFloor = typeof draft.destinationFloor === 'number' ? draft.destinationFloor : null;
       this.date = typeof draft.date === 'string' ? draft.date : '';
       this.alternateDates.set(Array.isArray(draft.alternateDates)
         ? draft.alternateDates.filter((value): value is string => typeof value === 'string').slice(0, 3)
@@ -269,6 +307,10 @@ export class EstimateComponent {
       destZip: this.destZip,
       destCity: this.destCity,
       destAddress: this.destAddress,
+      areaSqm: this.areaSqm,
+      roomCount: this.roomCount,
+      originFloor: this.originFloor,
+      destinationFloor: this.destinationFloor,
       date: this.date,
       alternateDates: this.alternateDates(),
       name: this.name,
@@ -408,13 +450,17 @@ export class EstimateComponent {
     return /^[\p{L}\p{M}][\p{L}\p{M}'’ .-]{1,79}$/u.test(name.trim());
   }
 
+  validOptionalInteger(value: number | null, min: number, max: number) {
+    return value === null || (Number.isInteger(value) && value >= min && value <= max);
+  }
+
   validEmail() {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email.trim());
   }
 
   advance() {
     if (this.sending() || !this.ok()) return;
-    if (this.step() === 4) {
+    if (this.step() === 5) {
       void this.submit();
       return;
     }
@@ -441,6 +487,12 @@ export class EstimateComponent {
           service: this.service(),
           origin: { zip: this.originZip, city: this.originCity, address: this.originAddress },
           destination: { zip: this.destZip, city: this.destCity, address: this.destAddress },
+          moveDetails: {
+            areaSqm: this.areaSqm,
+            roomCount: this.roomCount,
+            originFloor: this.originFloor,
+            destinationFloor: this.destinationFloor
+          },
           date: this.date,
           alternateDate: this.alternateDates().filter(Boolean).join(', '),
           alternateDates: this.alternateDates().filter(Boolean),
@@ -464,10 +516,18 @@ export class EstimateComponent {
       case 0: return !!this.service();
       case 1: return this.validAddress(this.originZip, this.originCity, this.originAddress);
       case 2: return this.validAddress(this.destZip, this.destCity, this.destAddress);
-      case 3: return this.validDates();
-      case 4: return this.validName(this.name) && this.validName(this.surname) && this.validPhone() && this.validEmail();
+      case 3: return this.validMoveDetails();
+      case 4: return this.validDates();
+      case 5: return this.validName(this.name) && this.validName(this.surname) && this.validPhone() && this.validEmail();
       default: return true;
     }
+  }
+
+  private validMoveDetails() {
+    return this.validOptionalInteger(this.areaSqm, 1, 1000) &&
+      this.validOptionalInteger(this.roomCount, 1, 50) &&
+      this.validOptionalInteger(this.originFloor, -3, 100) &&
+      this.validOptionalInteger(this.destinationFloor, -3, 100);
   }
 
   private validAddress(zip: string, city: string, address: string) {
