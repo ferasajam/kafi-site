@@ -37,6 +37,12 @@ jobs:
       - name: Build Angular app
         run: npm run build
 
+      - name: Configure public lead API URL
+        env:
+          KAFI_LEADS_API_URL: ${{ vars.KAFI_LEADS_API_URL }}
+        run: |
+          node -e 'const fs = require("node:fs"); const url = process.env.KAFI_LEADS_API_URL || "https://kafi-worker.firasajam10.workers.dev/api/inquiries"; if (!url.startsWith("https://")) throw new Error("KAFI_LEADS_API_URL must use HTTPS"); fs.writeFileSync("dist/movecorp-clone/browser/runtime-config.js", `window.KAFI_CONFIG = ${JSON.stringify({ leadsApiUrl: url })};\n`);'
+
       - name: Add custom domain
         run: printf 'kafitransporte.de\n' > dist/movecorp-clone/browser/CNAME
 

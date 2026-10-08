@@ -44,6 +44,7 @@ h1 span{display:block;color:rgba(255,255,255,0.7)}
 
 .wiz{max-width:980px;margin:auto;background:rgba(255,255,255,0.9);border:1px solid var(--line);border-radius:32px;padding:44px;box-shadow:var(--shadow);display:grid;gap:22px}
 .bar{height:8px;background:rgba(17,17,17,0.08);border-radius:999px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--org),#ffb458);transition:width .5s}
+.wizard-progress{display:grid;gap:9px;color:var(--muted);font-size:.82rem;font-weight:600}.form-note{color:var(--muted);font-size:.86rem;line-height:1.55}.form-note a{text-decoration:underline;text-underline-offset:3px}.form-error{padding:13px 16px;border:1px solid #df9c91;border-radius:12px;background:#fff0ed;color:#842b20;line-height:1.5}.request-summary{padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.5);line-height:1.7}.form-trap{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
 .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px}.opts.two{grid-template-columns:1fr 1fr}
 .opt{font:600 15px Sora;border:2px solid var(--line);border-radius:22px;background:#fff;padding:26px 12px;cursor:pointer;display:grid;gap:10px;justify-items:center}
 .opt.on{border-color:var(--org);background:var(--org-soft)}

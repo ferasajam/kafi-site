@@ -1,0 +1,8 @@
+name = "kafi-worker"
+main = "src/index.mjs"
+compatibility_date = "2026-10-08"
+workers_dev = true
+send_metrics = false
+
+[vars]
+ALLOWED_ORIGINS = "https://kafitransporte.de,https://www.kafitransporte.de,http://localhost:4200,http://127.0.0.1:4200"
