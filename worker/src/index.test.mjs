@@ -26,6 +26,23 @@ function validPayload(overrides = {}) {
   };
 }
 
+test('answers the browser preflight with the allowed KAFI origin', async () => {
+  const request = new Request('https://api.example.workers.dev/api/inquiries', {
+    method: 'OPTIONS',
+    headers: {
+      Origin: origin,
+      'Access-Control-Request-Method': 'POST',
+      'Access-Control-Request-Headers': 'content-type'
+    }
+  });
+  const result = await worker.fetch(request, env);
+
+  assert.equal(result.status, 204);
+  assert.equal(result.headers.get('Access-Control-Allow-Origin'), origin);
+  assert.equal(result.headers.get('Access-Control-Allow-Methods'), 'POST, OPTIONS');
+  assert.equal(result.headers.get('Access-Control-Allow-Headers'), 'Content-Type');
+});
+
 test('sends a validated inquiry to the configured recipient', async t => {
   let sent;
   t.mock.method(globalThis, 'fetch', async (url, options) => {
