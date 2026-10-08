@@ -1,6 +1,7 @@
 const MAX_BODY_BYTES = 12000;
 const MAX_TEXT_LENGTH = 200;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_PATTERN = /^\+?[\d\s()./-]+$/;
 const ALLOWED_SERVICES = new Set([
   'Privatumzug',
   'Firmenumzug',
@@ -109,7 +110,15 @@ export default {
       inquiry.contact.firstName, inquiry.contact.lastName,
       inquiry.contact.phone, inquiry.contact.email
     ];
-    if (required.some(value => !value) || !ALLOWED_SERVICES.has(inquiry.service) || !EMAIL_PATTERN.test(inquiry.contact.email)) {
+    const phoneDigits = inquiry.contact.phone.replace(/\D/g, '').length;
+    if (
+      required.some(value => !value) ||
+      !ALLOWED_SERVICES.has(inquiry.service) ||
+      !EMAIL_PATTERN.test(inquiry.contact.email) ||
+      !PHONE_PATTERN.test(inquiry.contact.phone) ||
+      phoneDigits < 7 ||
+      phoneDigits > 15
+    ) {
       return response({ error: 'Please check the required fields' }, 400, origin);
     }
     if (!env.RESEND_API_KEY) return response({ error: 'Email service is not configured' }, 503, origin);

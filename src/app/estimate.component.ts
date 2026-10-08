@@ -56,6 +56,7 @@ declare global {
           <input class="fld" autocomplete="given-name" placeholder="Vorname" aria-label="Vorname" [(ngModel)]="name">
           <input class="fld" autocomplete="family-name" placeholder="Nachname" aria-label="Nachname" [(ngModel)]="surname">
           <input class="fld" type="tel" autocomplete="tel" placeholder="Telefon" aria-label="Telefon" [(ngModel)]="phone">
+          <small class="form-hint">Zum Beispiel 015780945403 oder +49 157 80945403</small>
           <input class="fld" type="email" autocomplete="email" placeholder="E-Mail" aria-label="E-Mail" [(ngModel)]="email">
         </div>
         <div class="form-trap" aria-hidden="true">
@@ -167,7 +168,13 @@ export class EstimateComponent {
     if (s === 1) return !!(this.originZip && this.originCity);
     if (s === 2) return !!(this.destZip && this.destCity);
     if (s === 3) return !!this.date;
-    if (s === 4) return !!(this.name.trim() && this.surname.trim() && this.phone.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email.trim()));
+    if (s === 4) return !!(this.name.trim() && this.surname.trim() && this.validPhone() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email.trim()));
     return true;
+  }
+
+  validPhone() {
+    const phone = this.phone.trim();
+    const digits = phone.replace(/\D/g, '').length;
+    return /^\+?[\d\s()./-]+$/.test(phone) && digits >= 7 && digits <= 15;
   }
 }

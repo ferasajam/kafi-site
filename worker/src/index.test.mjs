@@ -43,6 +43,19 @@ test('sends a validated inquiry to the configured recipient', async t => {
   assert.equal(result.headers.get('Access-Control-Allow-Origin'), origin);
 });
 
+test('accepts the German national phone number 015780945403', async t => {
+  let sentBody;
+  t.mock.method(globalThis, 'fetch', async (_url, options) => {
+    sentBody = JSON.parse(options.body);
+    return Response.json({ id: 'email-id' });
+  });
+  const result = await worker.fetch(makeRequest(validPayload({
+    contact: { firstName: 'Firas', lastName: 'Test', phone: '015780945403', email: 'kunde@example.com' }
+  })), env);
+  assert.equal(result.status, 200);
+  assert.match(sentBody.text, /Telefon: 015780945403/);
+});
+
 test('rejects unapproved origins without calling Resend', async t => {
   t.mock.method(globalThis, 'fetch', async () => { throw new Error('Unexpected mail send'); });
   const result = await worker.fetch(makeRequest(validPayload(), 'https://attacker.example'), env);
