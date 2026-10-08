@@ -51,15 +51,20 @@ import { TiltDirective } from './effects';
         </div>
       }
       @case (5) {
-        <h2>Vielen Dank für Ihre Anfrage!</h2>
-        <p>Wir haben Ihre Angaben erhalten. KAFI Transporte prüft die Anfrage und meldet sich persönlich bei Ihnen.</p>
+        <h2>Ihre Anfrage ist noch nicht übermittelt.</h2>
+        <p>Das Formular versendet Ihre Angaben derzeit nicht. Bitte kontaktieren Sie KAFI Transporte telefonisch, per E-Mail oder WhatsApp.</p>
+        <div class="row">
+          <a class="btn solid" href="mailto:abourabiyehf@gmail.com">E-Mail schreiben</a>
+          <a class="btn ghost dark" href="tel:+491787410656">Anrufen</a>
+          <a class="btn ghost dark" href="https://wa.me/491787410656" target="_blank" rel="noreferrer">WhatsApp</a>
+        </div>
       }
     }
 
     @if (step() < 5) {
       <div class="row">
         <button class="btn ghost dark" [disabled]="step() === 0" (click)="step.set(step() - 1)">Zurück</button>
-        <button class="btn solid" [disabled]="!ok()" (click)="step.set(step() + 1)">{{ step() === 4 ? 'Kostenloses Angebot anfragen →' : 'Weiter' }}</button>
+        <button class="btn solid" [disabled]="!ok()" (click)="step.set(step() + 1)">{{ step() === 4 ? 'Kontaktmöglichkeiten anzeigen' : 'Weiter' }}</button>
       </div>
     }
   `

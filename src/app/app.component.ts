@@ -53,10 +53,10 @@ export class AppComponent {
     { q: 'Wie wird der Preis bestimmt?', a: 'Der Preis wird nicht automatisch auf der Website berechnet. Nach Ihrer Anfrage prüft KAFI Transporte die Angaben und erstellt bzw. bespricht ein individuelles Angebot.' },
     { q: 'Kann ich nur einzelne Möbel transportieren lassen?', a: 'Ja, sofern dieser Service für Ihre Anfrage geeignet ist, kann ein individueller Transport einzelner Möbel oder Ladungen organisiert werden.' },
     { q: 'Übernimmt KAFI Transporte Möbelmontagen?', a: 'Nur wenn die Leistung für Ihren Auftrag passend ist. Bitte teilen Sie uns Ihre Anforderungen in der Anfrage mit.' },
-    { q: 'Wie bekomme ich ein Angebot?', a: 'Über das Anfrageformular oder telefonisch unter +49 176 62811839.' }
+    { q: 'Wie bekomme ich ein Angebot?', a: 'Über das Anfrageformular oder telefonisch unter +49 178 7410656.' }
   ];
 
-  phones = [{ c: 'Berlin', n: '+49 176 62811839' }];
+  phones = [{ c: 'Berlin', n: '+49 178 7410656' }];
 
   @HostListener('window:scroll') onScroll() {
     this.scrolled.set(scrollY > 40);
