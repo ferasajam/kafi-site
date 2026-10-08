@@ -2,6 +2,7 @@ const MAX_BODY_BYTES = 12000;
 const MAX_TEXT_LENGTH = 200;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_PATTERN = /^\+?[\d\s()./-]+$/;
+const POSTCODE_PATTERN = /^\d{5}$/;
 const ALLOWED_SERVICES = new Set([
   'Privatumzug',
   'Firmenumzug',
@@ -37,6 +38,13 @@ function escapeHtml(value) {
 
 function formatAddress(address) {
   return [address.zip, address.city, address.address].filter(Boolean).join(' ');
+}
+
+function isFutureDate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = new Date(`${value}T00:00:00.000Z`);
+  if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value) return false;
+  return value >= new Date().toISOString().slice(0, 10);
 }
 
 export default {
@@ -83,6 +91,9 @@ export default {
     }
     if (clean(payload.website, 500)) return response({ accepted: true }, 200, origin);
 
+    const submittedAlternatives = Array.isArray(payload.alternateDates)
+      ? payload.alternateDates.slice(0, 4).map(value => clean(value, 20))
+      : clean(payload.alternateDate, 80).split(',').map(value => value.trim()).filter(Boolean);
     const inquiry = {
       service: clean(payload.service, 80),
       origin: {
@@ -96,7 +107,7 @@ export default {
         address: clean(payload.destination?.address, 120)
       },
       date: clean(payload.date, 20),
-      alternateDate: clean(payload.alternateDate, 80),
+      alternateDates: submittedAlternatives,
       contact: {
         firstName: clean(payload.contact?.firstName, 80),
         lastName: clean(payload.contact?.lastName, 80),
@@ -105,14 +116,21 @@ export default {
       }
     };
     const required = [
-      inquiry.service, inquiry.origin.zip, inquiry.origin.city,
-      inquiry.destination.zip, inquiry.destination.city, inquiry.date,
+      inquiry.service, inquiry.origin.zip, inquiry.origin.city, inquiry.origin.address,
+      inquiry.destination.zip, inquiry.destination.city, inquiry.destination.address, inquiry.date,
       inquiry.contact.firstName, inquiry.contact.lastName,
       inquiry.contact.phone, inquiry.contact.email
     ];
     const phoneDigits = inquiry.contact.phone.replace(/\D/g, '').length;
+    const uniqueAlternatives = new Set(inquiry.alternateDates);
     if (
       required.some(value => !value) ||
+      !POSTCODE_PATTERN.test(inquiry.origin.zip) ||
+      !POSTCODE_PATTERN.test(inquiry.destination.zip) ||
+      !isFutureDate(inquiry.date) ||
+      inquiry.alternateDates.length > 3 ||
+      uniqueAlternatives.size !== inquiry.alternateDates.length ||
+      inquiry.alternateDates.some(value => !isFutureDate(value) || value === inquiry.date) ||
       !ALLOWED_SERVICES.has(inquiry.service) ||
       !EMAIL_PATTERN.test(inquiry.contact.email) ||
       !PHONE_PATTERN.test(inquiry.contact.phone) ||
@@ -129,7 +147,7 @@ export default {
       ['Von', formatAddress(inquiry.origin)],
       ['Nach', formatAddress(inquiry.destination)],
       ['Wunschtermin', inquiry.date],
-      ['Alternativer Termin', inquiry.alternateDate || 'Keiner angegeben'],
+      ['Alternative Termine', inquiry.alternateDates.join(', ') || 'Keine angegeben'],
       ['Name', fullName],
       ['Telefon', inquiry.contact.phone],
       ['E-Mail', inquiry.contact.email]

@@ -13,12 +13,18 @@ function makeRequest(payload, requestOrigin = origin) {
   });
 }
 
+function futureDate(days = 30) {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
 function validPayload(overrides = {}) {
   return {
     service: 'Privatumzug',
     origin: { zip: '12353', city: 'Berlin', address: 'Ringslebenstraße 78' },
-    destination: { zip: '20095', city: 'Hamburg', address: '' },
-    date: '2026-11-02',
+    destination: { zip: '20095', city: 'Hamburg', address: 'Mönckebergstraße 7' },
+    date: futureDate(),
     alternateDate: '',
     contact: { firstName: 'Firas', lastName: 'Test', phone: '+49123456789', email: 'kunde@example.com' },
     website: '',
@@ -60,17 +66,43 @@ test('sends a validated inquiry to the configured recipient', async t => {
   assert.equal(result.headers.get('Access-Control-Allow-Origin'), origin);
 });
 
-test('accepts the German national phone number 015780945403', async t => {
+test('accepts the German national phone number 15700000000', async t => {
   let sentBody;
   t.mock.method(globalThis, 'fetch', async (_url, options) => {
     sentBody = JSON.parse(options.body);
     return Response.json({ id: 'email-id' });
   });
   const result = await worker.fetch(makeRequest(validPayload({
-    contact: { firstName: 'Firas', lastName: 'Test', phone: '015780945403', email: 'kunde@example.com' }
+    contact: { firstName: 'Firas', lastName: 'Test', phone: '15700000000', email: 'kunde@example.com' }
   })), env);
   assert.equal(result.status, 200);
-  assert.match(sentBody.text, /Telefon: 015780945403/);
+  assert.match(sentBody.text, /Telefon: 15700000000/);
+});
+
+test('includes up to three selected alternative dates in the email', async t => {
+  let sentBody;
+  t.mock.method(globalThis, 'fetch', async (_url, options) => {
+    sentBody = JSON.parse(options.body);
+    return Response.json({ id: 'email-id' });
+  });
+  const alternatives = [futureDate(40), futureDate(50)];
+  const result = await worker.fetch(makeRequest(validPayload({ alternateDates: alternatives })), env);
+  assert.equal(result.status, 200);
+  assert.match(sentBody.text, new RegExp(`Alternative Termine: ${alternatives.join(', ')}`));
+});
+
+test('rejects past move dates and malformed German postcodes', async t => {
+  t.mock.method(globalThis, 'fetch', async () => { throw new Error('Resend must not be called'); });
+  const yesterday = new Date();
+  yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+  const pastDate = yesterday.toISOString().slice(0, 10);
+  const pastResult = await worker.fetch(makeRequest(validPayload({ date: pastDate })), env);
+  assert.equal(pastResult.status, 400);
+
+  const postcodeResult = await worker.fetch(makeRequest(validPayload({
+    origin: { zip: '1234', city: 'Berlin', address: 'Ringslebenstraße 78' }
+  })), env);
+  assert.equal(postcodeResult.status, 400);
 });
 
 test('rejects unapproved origins without calling Resend', async t => {
