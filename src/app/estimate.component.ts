@@ -62,16 +62,6 @@ interface InquiryDraft {
       @case (1) {
         <h2>Wo startet Ihr Umzug?</h2>
         <div class="field-grid">
-          <div class="field-group">
-            <label for="origin-zip">Postleitzahl</label>
-            <input class="fld" id="origin-zip" inputmode="numeric" autocomplete="postal-code" placeholder="z. B. 12353" maxlength="5" pattern="[0-9]{5}" required [ngModel]="originZip" (ngModelChange)="originZip = $event; saveDraft()" #originZipField="ngModel">
-            @if (originZipField.invalid && (originZipField.touched || originZipField.dirty)) { <small class="field-error">Bitte geben Sie eine fünfstellige deutsche Postleitzahl ein.</small> }
-          </div>
-          <div class="field-group">
-            <label for="origin-city">Ort</label>
-            <input class="fld" id="origin-city" autocomplete="address-level2" placeholder="Stadt oder Gemeinde" minlength="2" maxlength="80" required [ngModel]="originCity" (ngModelChange)="originCity = $event; saveDraft()" #originCityField="ngModel">
-            @if (originCityField.invalid && (originCityField.touched || originCityField.dirty)) { <small class="field-error">Bitte geben Sie einen Ort ein.</small> }
-          </div>
           <div class="field-group autocomplete-field">
             <label for="origin-address">Straße und Hausnummer</label>
             <input class="fld" id="origin-address" autocomplete="street-address" placeholder="Straße und Hausnummer eingeben" minlength="3" maxlength="120" required [ngModel]="originAddress" (ngModelChange)="originAddress = $event; searchAddress('origin', $event); saveDraft()" #originAddressField="ngModel" role="combobox" aria-autocomplete="list" aria-controls="origin-address-suggestions" [attr.aria-expanded]="originSuggestions().length > 0">
@@ -85,21 +75,21 @@ interface InquiryDraft {
             }
             <small class="form-hint">Adressvorschläge über Photon / <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap</a>. Manuelle Eingabe ist ebenfalls möglich.</small>
           </div>
+          <div class="field-group">
+            <label for="origin-zip">Postleitzahl</label>
+            <input class="fld" id="origin-zip" inputmode="numeric" autocomplete="postal-code" placeholder="z. B. 12353" maxlength="5" pattern="[0-9]{5}" required [ngModel]="originZip" (ngModelChange)="originZip = $event; saveDraft()" #originZipField="ngModel">
+            @if (originZipField.invalid && (originZipField.touched || originZipField.dirty)) { <small class="field-error">Bitte geben Sie eine fünfstellige deutsche Postleitzahl ein.</small> }
+          </div>
+          <div class="field-group">
+            <label for="origin-city">Ort</label>
+            <input class="fld" id="origin-city" autocomplete="address-level2" placeholder="Stadt oder Gemeinde" minlength="2" maxlength="80" required [ngModel]="originCity" (ngModelChange)="originCity = $event; saveDraft()" #originCityField="ngModel">
+            @if (originCityField.invalid && (originCityField.touched || originCityField.dirty)) { <small class="field-error">Bitte geben Sie einen Ort ein.</small> }
+          </div>
         </div>
       }
       @case (2) {
         <h2>Wohin geht Ihr Umzug?</h2>
         <div class="field-grid">
-          <div class="field-group">
-            <label for="destination-zip">Postleitzahl</label>
-            <input class="fld" id="destination-zip" inputmode="numeric" autocomplete="postal-code" placeholder="z. B. 20095" maxlength="5" pattern="[0-9]{5}" required [ngModel]="destZip" (ngModelChange)="destZip = $event; saveDraft()" #destZipField="ngModel">
-            @if (destZipField.invalid && (destZipField.touched || destZipField.dirty)) { <small class="field-error">Bitte geben Sie eine fünfstellige deutsche Postleitzahl ein.</small> }
-          </div>
-          <div class="field-group">
-            <label for="destination-city">Ort</label>
-            <input class="fld" id="destination-city" autocomplete="address-level2" placeholder="Stadt oder Gemeinde" minlength="2" maxlength="80" required [ngModel]="destCity" (ngModelChange)="destCity = $event; saveDraft()" #destCityField="ngModel">
-            @if (destCityField.invalid && (destCityField.touched || destCityField.dirty)) { <small class="field-error">Bitte geben Sie einen Ort ein.</small> }
-          </div>
           <div class="field-group autocomplete-field">
             <label for="destination-address">Straße und Hausnummer</label>
             <input class="fld" id="destination-address" autocomplete="street-address" placeholder="Straße und Hausnummer eingeben" minlength="3" maxlength="120" required [ngModel]="destAddress" (ngModelChange)="destAddress = $event; searchAddress('destination', $event); saveDraft()" #destAddressField="ngModel" role="combobox" aria-autocomplete="list" aria-controls="destination-address-suggestions" [attr.aria-expanded]="destinationSuggestions().length > 0">
@@ -112,6 +102,16 @@ interface InquiryDraft {
               </div>
             }
             <small class="form-hint">Adressvorschläge über Photon / <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap</a>. Manuelle Eingabe ist ebenfalls möglich.</small>
+          </div>
+          <div class="field-group">
+            <label for="destination-zip">Postleitzahl</label>
+            <input class="fld" id="destination-zip" inputmode="numeric" autocomplete="postal-code" placeholder="z. B. 20095" maxlength="5" pattern="[0-9]{5}" required [ngModel]="destZip" (ngModelChange)="destZip = $event; saveDraft()" #destZipField="ngModel">
+            @if (destZipField.invalid && (destZipField.touched || destZipField.dirty)) { <small class="field-error">Bitte geben Sie eine fünfstellige deutsche Postleitzahl ein.</small> }
+          </div>
+          <div class="field-group">
+            <label for="destination-city">Ort</label>
+            <input class="fld" id="destination-city" autocomplete="address-level2" placeholder="Stadt oder Gemeinde" minlength="2" maxlength="80" required [ngModel]="destCity" (ngModelChange)="destCity = $event; saveDraft()" #destCityField="ngModel">
+            @if (destCityField.invalid && (destCityField.touched || destCityField.dirty)) { <small class="field-error">Bitte geben Sie einen Ort ein.</small> }
           </div>
         </div>
       }
