@@ -501,9 +501,10 @@ export class EstimateComponent {
         })
       });
 
-      if (!response.ok) throw new Error('Request was rejected');
+      const result = await response.json() as { accepted?: boolean };
+      if (!response.ok || result.accepted !== true) throw new Error('Request was rejected');
       this.clearDraft();
-      this.step.set(5);
+      this.step.set(6);
     } catch {
       this.submitError.set('Ihre Anfrage konnte gerade nicht gesendet werden. Bitte versuchen Sie es erneut oder kontaktieren Sie uns telefonisch unter +49 178 7410656.');
     } finally {
